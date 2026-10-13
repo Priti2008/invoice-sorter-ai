@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open-Source AI Invoice Sorter - Side Hustle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen p-6">
+    <div class="max-w-3xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-indigo-400">📄 Local-First Invoice & Receipt Sorter</h1>
+            <p class="text-slate-400 mt-2">Powered by Open-Source AI (Private & Secure for Freelancers)</p>
+        </header>
+
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700">
+            <label class="block text-sm font-medium mb-2 text-slate-300">Paste Invoice / Receipt Text:</label>
+            <textarea id="invoiceText" rows="6" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-indigo-500" placeholder="Paste raw invoice text here... e.g., 'Invoice from AWS for $45.00'"></textarea>
+            
+            <button onclick="sortInvoice()" id="submitBtn" class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition">
+                Sort & Extract Data
+            </button>
+        </div>
+
+        <div id="resultBox" class="mt-8 hidden bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700">
+            <h3 class="text-xl font-semibold text-emerald-400 mb-4">Extracted Details (JSON):</h3>
+            <pre id="outputJson" class="bg-slate-900 p-4 rounded-lg text-emerald-300 overflow-x-auto text-sm"></pre>
+        </div>
+    </div>
+
+    <script>
+        async function sortInvoice() {
+            const text = document.getElementById('invoiceText').value;
+            const btn = document.getElementById('submitBtn');
+            const resultBox = document.getElementById('resultBox');
+            const outputJson = document.getElementById('outputJson');
+
+            if (!text) return alert('Please enter some invoice text!');
+
+            btn.innerText = 'Processing with Open-Source AI...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/sort', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+                const data = await response.json();
+                outputJson.innerText = JSON.stringify(data, null, 2);
+                resultBox.classList.remove('hidden');
+            } catch (err) {
+                alert('Error processing invoice');
+            } finally {
+                btn.innerText = 'Sort & Extract Data';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
